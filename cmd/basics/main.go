@@ -108,7 +108,9 @@ func main() {
 	fmt.Printf("teamSlice [2:3] is %q\n", teamSlice)
 
 	fmt.Printf("----------------------------------------------------------\n\n")
-	// LESSON 2 - Control Flow Statements //////////////////////////////////////
+
+
+	// LESSON 2 - Flow Control Statements //////////////////////////////////////
 
 	fmt.Printf("Simple if statement:\n")
 	if isValid {
@@ -151,15 +153,15 @@ func main() {
 	}
 
 	fmt.Printf("switch with assignment\n")
-	switch otherResult := someFunction(); otherResult {
-	case 1:
-		fmt.Printf("  otherResult == 1\n")
+	switch otherResult := someFunction(); {
+	case otherResult < 2:
+		fmt.Printf("  otherResult == %q\n", otherResult)
 	default:
 		fmt.Printf("  otherResult >= 1\n")
 	}
 
 	// This won't work because otherResult exists only in the switch:
-	//	fmt.Printf("  otherResult is %d\n", otherResult)
+	// fmt.Printf("  otherResult is %d\n", otherResult)
 
 	fmt.Printf("Iterating with range\n")
 	// Iterating with "range" is very concise and easy
@@ -177,4 +179,8 @@ func main() {
 			team[index].Age)
 	}
 
+	fmt.Printf("For can work like 'while' in other languages:\n")
+	for someFunction() < 0 {
+		fmt.Printf("gets printed while someFunction() returns < 0 \n")
+	}
 }
