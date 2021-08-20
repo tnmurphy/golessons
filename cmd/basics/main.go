@@ -111,6 +111,7 @@ func main() {
 
 
 	// LESSON 2 - Flow Control Statements //////////////////////////////////////
+	fmt.Printf(" LESSON 2 \n\n")
 
 	fmt.Printf("Simple if statement:\n")
 	if isValid {
@@ -183,4 +184,66 @@ func main() {
 	for someFunction() < 0 {
 		fmt.Printf("gets printed while someFunction() returns < 0 \n")
 	}
+
+	// LESSON 3 - Maps, make() and more slicing ////////////////////////////////
+	fmt.Printf(" LESSON 3 - maps and dynamic arrays \n\n")
+
+	var nameToAge = map[string]int{"Bob": 24, "Alice" : 25, "Jane": 23 }
+
+	fmt.Printf("Alice is %d years old\n", nameToAge["Alice"])
+
+	fmt.Printf("\nIterating over a map\n")
+	for name, age := range nameToAge {
+		fmt.Printf("   %q is %d years old\n", name, age)
+	}
+
+
+	
+	fmt.Printf("\nDynamic Allocaton of slices or maps\n")
+
+	var dynamicPerson = &Person{"Bob", 24} // Dynamically allocating 1 thing
+
+	var dynamicTeam = make([]Person, 0, 3) // initial size is 0, capacity is 3
+
+	// Basically an array of size 5 is created and a slice length 0 is returned
+	//
+
+	// Appending upto the capacity 
+	dynamicTeam = append(dynamicTeam, Person{"Alice", 25})
+	fmt.Printf("After appending Alice dynamicTeam is %v\n", dynamicTeam)
+	dynamicTeam = append(dynamicTeam, *dynamicPerson)
+	fmt.Printf("After appending Bob dynamicTeam is %v\n", dynamicTeam)
+	dynamicTeam = append(dynamicTeam, Person{"Jane", 23})
+	fmt.Printf("After appending Jane dynamicTeam is %v\n", dynamicTeam)
+
+	 // The array is now "full" to it's capacity of 3
+	 
+	 
+	// Copy the slice - this is only a copy of the "window" onto the original
+	// array that was allocated by make()
+	savedSlice := dynamicTeam  
+
+	 // The next append forces a reallocation and copy
+	dynamicTeam = append(dynamicTeam, Person{"Fred", 22})
+
+
+	savedSlice[0] = Person{"Greg", 21} // This changes the original array size 3
+	fmt.Printf("After appending Fred savedSlice is %v\n", savedSlice)
+
+	// ... but dynamicTeam is unaffected because the last append reallocated and
+	// copied it.
+	fmt.Printf("After appending Fred dynamicTeam is %v\n", dynamicTeam)
+
+	// So beware of the potential for a subtle bug here! When you append to an
+	// slice the returned slice may not be "looking" at the same memory that
+	// it was before the append. 
+
+
+    // You can also "make()" maps
+
+	myMap := make(map[string]int, 3) //  a map with "capacity" 3
+	myMap["Fred"] = 13
+
+	
+
 }
