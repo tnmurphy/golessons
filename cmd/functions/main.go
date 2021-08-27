@@ -38,9 +38,9 @@ type Person struct {
 var people = []Person{
 		{"Alice", 25},
 		{"Bob",   24},
+		{"Mary",  19}, 
 		{"Jane",  23},
 		{"Fred",  25},
-		{"John",  26}, 
 }
 
 
@@ -49,6 +49,10 @@ func isOldEnough(p *Person) bool {
 	return p.Age > 20
 }
 
+
+func getAge(p *Person) (int, bool)  {
+	return p.Age, p.Age > 20
+}
 
 
 func selectPeople(filter func(p *Person)bool) []Person {
@@ -65,23 +69,51 @@ func selectPeople(filter func(p *Person)bool) []Person {
 }
 
 
-
-
-
 func peopleGenerator(filter func(p *Person)bool) func()(Person, bool) {
     // Returns a function which "gets the next" person
     // It demonstrates a continuation where the returned function remembers
     // "currentPersonIndex" so that it is able to issue the next record
     // Note that this avoids allocating a dynamic array which could save
     // memory when there are a large number of records.
-	currentPersonIndex := -1
+	
+	currentPersonIndex := 0
 	return func()(Person, bool) {
-		currentPersonIndex++
-		if currentPersonIndex >= len(people) {
-			return Person{}, false
+		for {
+			if currentPersonIndex >= len(people) {
+				return Person{}, false
+			}
+			
+			p := &people[currentPersonIndex]
+		    currentPersonIndex++
+			if filter(p) {
+				return *p, true
+			}
 		}
-		return people[currentPersonIndex], true
 	}
+}
+
+func doSomethingAndCleanUp() {
+	people[0].Age++ // change something
+
+	defer func () {
+		people[0].Age--
+	}()
+
+	// Now, no matter where the function exits
+	// the age will be reset.
+
+	if people[0].Age > 21 {
+		print("Age>21\n")
+		return	 // 1st possible exit
+	}
+
+	if strings.HasPrefix(people[0].Name, "A") {
+		print("Name starts with A\n") 
+		return // 2nd possible exit
+
+	}
+
+	return // 3rd possible exit 
 }
 
 func main() {
@@ -90,6 +122,12 @@ func main() {
 	// Function Calls
 	if isOldEnough(&people[0]) {
 		fmt.Printf("True returned from isOldEnough\n")
+	}
+
+	
+	fmt.Printf("\nFunction passed as an argument\n")
+	for _, person := range(selectPeople(isOldEnough)) {
+		fmt.Printf("Person: %v, Age: %d\n", person.Name, person.Age)
 	}
 
 
@@ -102,19 +140,23 @@ func main() {
 	}
 
 	// You can assign anonymous functions to variables
-	var myFilter = func(p *Person) bool {
+	myFilter := func(p *Person) bool {
 		return strings.ContainsAny(p.Name, "Aa") 
 	}
+
+	myFilter(&people[0])
 
 	fmt.Printf("\nAnonymous function assigned to a variable (people with names containing 'a'):\n")
 	for _, person := range(selectPeople(myFilter)) {
 		fmt.Printf("Person: %v, Age: %d\n", person.Name, person.Age)
 	}
 
+	
 	fmt.Printf("\nA continuation\n")
 	getNextPerson := peopleGenerator(isOldEnough); 
 	for p, ok := getNextPerson(); ok; p, ok = getNextPerson() {
 		fmt.Printf("getNextPerson returned: %q\n", p.Name)	
 	}
+	
 
 }
