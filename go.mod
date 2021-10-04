@@ -1,3 +1,3 @@
-module github.com/tnmurphy/golessons/v2
+module github.com/tnmurphy/golessons
 
 go 1.16
